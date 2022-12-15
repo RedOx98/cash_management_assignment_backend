@@ -1,0 +1,17 @@
+{
+  "name": "cash_management_app",
+  "version": "1.0.0",
+  "description": "cohorts 2022 cash_management full stack application for transfer authentication and check balance",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "olaide_hammed, femi_sokoya, wole_owoeye, tosin_onadipe",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
