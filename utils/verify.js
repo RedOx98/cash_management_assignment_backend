@@ -29,11 +29,7 @@ const verifyToken = async (req, res, next) => {
     const verifyUser = (req, res, next) => {
         verifyToken(req, res, next, ()=> {
             if(req.user.id === req.params.id ){
-                if(req.user.account_bal > req.body.amount){
-                    next();
-                }else{
-                    return next(createError(403, 'you be barao'));
-                }
+                next();
             }else {
                 if(err) return next(createError(403, 'You are not authorized!'));
             }

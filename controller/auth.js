@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const createError = require('../utils/error');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Token = require('../models/Token');
+const crypto = require('crypto');
+const sendMail = require('../utils/sendMail');
 const router = express.Router();
 
 
@@ -20,6 +23,9 @@ const register = async (req, res, next) => {
     // const password = await bcrypt(plainTextPassword, 10);
 
     try {
+        const existingUser = await User.findOne({email: req.body.email});
+        if(existingUser) return res.status(400).json('User with given email already exist!');
+
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
         let newUser = new User ({
@@ -30,13 +36,36 @@ const register = async (req, res, next) => {
         
 
         const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
+        const token = await new Token({
+            userId: savedUser._id,
+            token: crypto.randomBytes(32).toString('hex'),
+        }).save();
+        const url = `${process.env.BASE_URL}users/${savedUser._id}/verify/${token.token}`;
+        await sendMail(savedUser.email, 'Congratulations on your signup to ecoAacademy cash-management-platform please verify', url);
+
+        res.status(201).json({mssg: 'An Email sent to your account please verify'});
 
     } catch (err) {
         next(err)
     }
 
 };
+
+const verifyMail = async (req, res, next) => {
+    try {
+        const user = await User.findOne({id: req.params.id});
+        if(!user) return res.status(400).send({message: 'Invalid link'});
+        const token = await Token.findOne({userId: savedUser._id, token: req.params.token});
+        if(!token) return res.status(400).json({message: 'Invalid link'});
+
+        await User.updateOne({id:user._id, verified: true});
+        await token.remove();
+
+        res.status(200).json({message: 'Email verified successfully'});
+    } catch (err) {
+        next(err);
+    }
+}
 
 const login = async (req, res, next) => {
     try {
@@ -69,4 +98,4 @@ const login = async (req, res, next) => {
 
 
 
-module.exports = {login, register};
+module.exports = {login, register, verifyMail};
