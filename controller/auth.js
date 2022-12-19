@@ -28,11 +28,12 @@ const register = async (req, res, next) => {
 
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
-        let newUser = new User ({
+        let user = new User({
             ...req.body,
             password: hash
         });
 
+<<<<<<< HEAD
         
 
         const savedUser = await newUser.save();
@@ -44,11 +45,14 @@ const register = async (req, res, next) => {
         await sendMail(savedUser.email, 'Congratulations on your signup to ecoAacademy cash-management-platform please verify', url);
 
         res.status(201).json({mssg: 'An Email sent to your account please verify'});
+=======
+        const savedUser = await user.save();
+        res.status(201).json(savedUser);
+>>>>>>> transfer
 
     } catch (err) {
         next(err)
     }
-
 };
 
 const verifyMail = async (req, res, next) => {
@@ -69,27 +73,35 @@ const verifyMail = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const user = await User.findOne({email:req.body.email})
-    if(!user) return next(createError(404, 'User not found!'));
+        const user = await User.findOne({ email: req.body.email })
+        if (!user) return next(createError(404, 'User not found!'));
 
-    const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
 
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, 
-        process.env.JWT_SEC,
-        {expiresIn:'3d'});
-        
-        if(!isPasswordCorrect) return next(createError(400, 'Wrong password or username'));
+        const token = jwt.sign({
+            id: user._id,
+            email: user.email,
+            account_num: user.account_num
+        }, process.env.JWT_SECRET, { expiresIn: '3d' });
+
+        if (!isPasswordCorrect) return next(createError(400, 'Wrong password or username'));
         // const accountNumber = await User.findByIdAndUpdate({req.})
-        const {password, ...info} = user._doc
+        const { password, ...info } = user._doc
         res.cookie('access_token', token, {
             httpOnly: true,
+<<<<<<< HEAD
         })
         .status(200)
         .json({details: {...info}, });
     } catch (err) {
+=======
+        }).status(200).json({ details: { ...info }, });
+        
+    } catch (error) {
+>>>>>>> transfer
         next(err);
     }
-    
+
 }
 
 
@@ -98,4 +110,8 @@ const login = async (req, res, next) => {
 
 
 
+<<<<<<< HEAD
 module.exports = {login, register, verifyMail};
+=======
+module.exports = { login, register };
+>>>>>>> transfer
