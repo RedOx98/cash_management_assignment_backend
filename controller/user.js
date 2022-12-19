@@ -56,7 +56,7 @@ const verifyMail = async (req, res, next) => {
     }
 }
 
-//GET ONE
+//UPDATE ONE
 const updatedUser = async (req, res, next) => {
     try {
         const user = await User.findByIdAndUpdate(
@@ -71,4 +71,16 @@ const updatedUser = async (req, res, next) => {
     }
 }
 
-module.exports = {checkVerified, updatedUser, verifyMail};
+//GET ONE
+const getUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(
+            req.params.id
+        );
+        res.status(200).json(user);
+    } catch (err) {
+        next(err);
+    }
+}
+
+module.exports = {checkVerified, updatedUser, verifyMail, getUser};

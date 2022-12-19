@@ -86,7 +86,7 @@ const login = async (req, res, next) => {
         })
         .status(200)
         .json({details: {...info}, });
-    } catch (error) {
+    } catch (err) {
         next(err);
     }
     
