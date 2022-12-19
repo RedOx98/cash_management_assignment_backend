@@ -22,45 +22,43 @@ const register = async (req, res, next) => {
     try {
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
-        let newUser = new User ({
+        let user = new User({
             ...req.body,
             password: hash
         });
 
-        
-
-        const savedUser = await newUser.save();
+        const savedUser = await user.save();
         res.status(201).json(savedUser);
 
     } catch (err) {
         next(err)
     }
-
 };
 
 const login = async (req, res, next) => {
     try {
-        const user = await User.findOne({email:req.body.email})
-    if(!user) return next(createError(404, 'User not found!'));
+        const user = await User.findOne({ email: req.body.email })
+        if (!user) return next(createError(404, 'User not found!'));
 
-    const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
+        const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
 
-    const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, 
-        process.env.JWT_SEC,
-        {expiresIn:'3d'});
-        
-        if(!isPasswordCorrect) return next(createError(400, 'Wrong password or username'));
+        const token = jwt.sign({
+            id: user._id,
+            email: user.email,
+            account_num: user.account_num
+        }, process.env.JWT_SECRET, { expiresIn: '3d' });
+
+        if (!isPasswordCorrect) return next(createError(400, 'Wrong password or username'));
         // const accountNumber = await User.findByIdAndUpdate({req.})
-        const {password, ...info} = user._doc
+        const { password, ...info } = user._doc
         res.cookie('access_token', token, {
             httpOnly: true,
-        })
-        .status(200)
-        .json({details: {...info}, });
+        }).status(200).json({ details: { ...info }, });
+        
     } catch (error) {
         next(err);
     }
-    
+
 }
 
 
@@ -69,4 +67,4 @@ const login = async (req, res, next) => {
 
 
 
-module.exports = {login, register};
+module.exports = { login, register };
