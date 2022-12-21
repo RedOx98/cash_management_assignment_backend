@@ -29,11 +29,12 @@ const checkVerified = async (req, res, next) => {
         await sendMail(user.email, 'Verify Email', url);
         }
         
-        return res.status(400).json({message: 'An Email sent to your Account, please verify'})
+        return res.status(400).json({message: 'An Email sent to your Account, please verify',user})
         }
         
     const tokenVerify = user.generateAuthToken();
-    res.status(200).json({data: tokenVerify, message: 'logged in successfully'});
+    const {password, ...info} = user._doc
+    res.status(200).json({data: info,tokenVerify, message: 'logged in successfully'});
     } catch (err) {
         next(err);
     };

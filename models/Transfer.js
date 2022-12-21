@@ -1,10 +1,12 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const transferSchema = mongoose.Schema({
-    bank: {type: String, unique: true, required: true},
-    account_num: {type: String, required: true},
-    amount: {type: String, required: true},
-    Remark: {type: String, required: false}
-}, {timestamps: true}, {collection: 'transfers'});
+    sender_acct: {type: Number},
+    recipient_acct: {type: Number},
+    recipient_bank: {type: String},
+    amount: {type: Number},
+    remark: String
+}, {timestamps: true}, {collection: 'transfers'});
+
 
 module.exports = mongoose.model('Transfer', transferSchema);

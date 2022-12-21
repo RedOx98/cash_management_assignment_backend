@@ -1,4 +1,4 @@
-const express = require('express');
+// const express = require('express');
 const jwt = require('jsonwebtoken');
 const createError = require('../utils/error');
 const bcrypt = require('bcryptjs');
@@ -6,7 +6,7 @@ const User = require('../models/User');
 const Token = require('../models/Token');
 const crypto = require('crypto');
 const sendMail = require('../utils/sendMail');
-const router = express.Router();
+// const router = express.Router();
 
 
 const register = async (req, res, next) => {
@@ -28,12 +28,11 @@ const register = async (req, res, next) => {
 
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(req.body.password, salt);
-        let user = new User({
+        let newUser = new User({
             ...req.body,
             password: hash
         });
 
-<<<<<<< HEAD
         
 
         const savedUser = await newUser.save();
@@ -45,10 +44,6 @@ const register = async (req, res, next) => {
         await sendMail(savedUser.email, 'Congratulations on your signup to ecoAacademy cash-management-platform please verify', url);
 
         res.status(201).json({mssg: 'An Email sent to your account please verify'});
-=======
-        const savedUser = await user.save();
-        res.status(201).json(savedUser);
->>>>>>> transfer
 
     } catch (err) {
         next(err)
@@ -89,16 +84,10 @@ const login = async (req, res, next) => {
         const { password, ...info } = user._doc
         res.cookie('access_token', token, {
             httpOnly: true,
-<<<<<<< HEAD
         })
         .status(200)
         .json({details: {...info}, });
     } catch (err) {
-=======
-        }).status(200).json({ details: { ...info }, });
-        
-    } catch (error) {
->>>>>>> transfer
         next(err);
     }
 
@@ -110,8 +99,4 @@ const login = async (req, res, next) => {
 
 
 
-<<<<<<< HEAD
 module.exports = {login, register, verifyMail};
-=======
-module.exports = { login, register };
->>>>>>> transfer
