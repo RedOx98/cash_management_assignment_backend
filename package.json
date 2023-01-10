@@ -4,7 +4,7 @@
   "description": "cohorts 2022 cash_management full stack application for transfer authentication and check balance",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "nodemon index",
     "dev": "nodemon index"
   },
   "author": "olaide_hammed, femi_sokoya, wole_owoeye, tosin_onadipe",
